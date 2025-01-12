@@ -3,11 +3,11 @@ import React from 'react';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { Box, Button, Card, IconButton, Typography } from '@mui/material';
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Legend,
+  Line,
+  LineChart,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -15,6 +15,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
+import { spMock } from '../../mock/spMock';
 
 const DashboardContent = () => {
   // Sample data
@@ -33,6 +35,8 @@ const DashboardContent = () => {
     { name: '2023', value: 35 },
   ];
 
+  const mockBarData = spMock.map((x, index) => ({ id: index, title: 'S&P 500', ...x }));
+
   const COLORS = ['#6C63FF', '#65C9FF'];
 
   return (
@@ -48,16 +52,12 @@ const DashboardContent = () => {
 
         {/* Bar Chart */}
         <Box sx={{ height: 300, marginTop: 2 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={mockBarData}>
+              <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="Date" /> <YAxis /> <Tooltip />
               <Legend />
-              <Bar dataKey="2022" fill="#6C63FF" />
-              <Bar dataKey="2023" fill="#65C9FF" />
-            </BarChart>
+              <Line type="monotone" dataKey="Forecast" stroke="#8884d8" activeDot={{ r: 8 }} />
+            </LineChart>
           </ResponsiveContainer>
         </Box>
       </Card>

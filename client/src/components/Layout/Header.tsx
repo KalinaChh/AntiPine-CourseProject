@@ -1,18 +1,12 @@
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { AppBar, Toolbar, Typography } from '@mui/material';
 
 export default function Header() {
-  const isLoggedIn = true;
-
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ zIndex: 10000 }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-        <Typography variant="h6" component="div">
-          Online communications
+        <Typography variant="h4" component="div">
+          AntiPine
         </Typography>
-
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          {isLoggedIn ? <Typography>Hello User</Typography> : <Typography>Log in</Typography>}
-        </Box>
       </Toolbar>
     </AppBar>
   );

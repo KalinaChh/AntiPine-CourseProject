@@ -19,7 +19,7 @@ module.exports = withRoutes(
       return [
         {
           source: '/',
-          destination: '/dashboard',
+          destination: '/history',
           permanent: true,
         },
       ];

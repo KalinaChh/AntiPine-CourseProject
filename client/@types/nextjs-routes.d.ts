@@ -11,7 +11,8 @@ declare module "nextjs-routes" {
   } from "next";
 
   export type Route =
-    | StaticRoute<"/dashboard">;
+    | StaticRoute<"/history">
+    | StaticRoute<"/prediction">;
 
   interface StaticRoute<Pathname> {
     pathname: Pathname;
