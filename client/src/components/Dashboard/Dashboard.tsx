@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box } from '@mui/material';
 
@@ -6,6 +6,7 @@ import { DataLog } from '../../pages/history';
 import DashboardContent from './DashboardContent';
 import { DashboardFilters } from './DashboardFilters';
 import { DashboardTabs } from './DashboardTabs';
+import { getDataForPeriod } from './helpers';
 
 const SP500_TAB_INDEX = 0;
 
@@ -21,7 +22,20 @@ export const Dashboard = ({ spData, bitcoinData, boardType }: DashboardProps) =>
   const [selectedTab, setSelectedTab] = useState(SP500_TAB_INDEX);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('6mths');
 
+  const [chartData, setChartData] = useState<DataLog[]>([]);
+
   const isHistory = boardType === 'history';
+
+  useEffect(() => {
+    const selectedDataSource = selectedTab === SP500_TAB_INDEX ? spData : bitcoinData;
+
+    if (isHistory) {
+      setChartData(selectedDataSource);
+      return;
+    }
+
+    setChartData(getDataForPeriod(selectedDataSource, timePeriod));
+  }, [selectedTab, timePeriod, spData, bitcoinData]);
 
   return (
     <Box mt={10}>
@@ -31,10 +45,7 @@ export const Dashboard = ({ spData, bitcoinData, boardType }: DashboardProps) =>
         {!isHistory && <DashboardFilters timePeriod={timePeriod} setTimePeriod={setTimePeriod} />}
       </Box>
 
-      <DashboardContent
-        chartData={selectedTab === SP500_TAB_INDEX ? spData : bitcoinData}
-        isHistoryContent={isHistory}
-      />
+      <DashboardContent chartData={chartData} isHistoryContent={isHistory} />
     </Box>
   );
 };

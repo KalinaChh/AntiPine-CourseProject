@@ -43,11 +43,11 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
 
           <Box>
             <Button variant="outlined" size="small">
-              {formatChartFooterDate(chartData[0].Date)}
+              {formatChartFooterDate(chartData?.[0]?.Date)}
             </Button>
             -
             <Button variant="outlined" size="small">
-              {formatChartFooterDate(chartData[chartData.length - 1].Date)}
+              {formatChartFooterDate(chartData?.[chartData.length - 1]?.Date)}
             </Button>
           </Box>
         </Box>
