@@ -1,20 +1,26 @@
-import { Box } from '@mui/material';
-
 import MainLayout from '@/components/Layout/MainLayout';
 
-import DashboardContent from '../components/Dashboard/DashboardContent';
-import { DashboardTabs } from '../components/Dashboard/DashboardTabs';
+import { Dashboard } from '../components/Dashboard/Dashboard';
+import { bitcoinHistoryMock } from '../mock/history/bitcoinHistoryMock';
+import { sp500PHistoryMock } from '../mock/history/sp500HistoryMock';
+
+export type DataLog = {
+  Title: string;
+  Date: string;
+  Forecast: number;
+};
 
 export default function History() {
+  const sp500PredictionMockData = sp500PHistoryMock.map((x, index) => ({ id: index, ...x }));
+  const bitcoinMockData = bitcoinHistoryMock.map((x, index) => ({ id: index, ...x }));
+
   return (
     <MainLayout>
-      <Box mt={10}>
-        <Box sx={{ display: 'flex' }}>
-          <DashboardTabs />
-        </Box>
-
-        <DashboardContent />
-      </Box>
+      <Dashboard
+        spData={sp500PredictionMockData}
+        bitcoinData={bitcoinMockData}
+        boardType={'history'}
+      />
     </MainLayout>
   );
 }

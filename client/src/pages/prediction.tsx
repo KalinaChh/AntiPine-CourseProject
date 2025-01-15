@@ -1,23 +1,20 @@
-import { Box } from '@mui/material';
-
 import MainLayout from '@/components/Layout/MainLayout';
 
-import DashboardContent from '../components/Dashboard/DashboardContent';
-import { DashboardFilters } from '../components/Dashboard/DashboardFilters';
-import { DashboardTabs } from '../components/Dashboard/DashboardTabs';
+import { Dashboard } from '../components/Dashboard/Dashboard';
+import { bitcoinPredictionMock } from '../mock/predictions/bitcoinPredictionMock';
+import { sp500PredictionMock } from '../mock/predictions/sp500PredictionMock';
 
 export default function Prediction() {
+  const sp500PredictionMockData = sp500PredictionMock.map((x, index) => ({ id: index, ...x }));
+  const bitcoinMockData = bitcoinPredictionMock.map((x, index) => ({ id: index, ...x }));
+
   return (
     <MainLayout>
-      <Box mt={10}>
-        <Box sx={{ display: 'flex' }}>
-          <DashboardTabs />
-
-          <DashboardFilters />
-        </Box>
-
-        <DashboardContent />
-      </Box>
+      <Dashboard
+        spData={sp500PredictionMockData}
+        bitcoinData={bitcoinMockData}
+        boardType={'predictions'}
+      />
     </MainLayout>
   );
 }

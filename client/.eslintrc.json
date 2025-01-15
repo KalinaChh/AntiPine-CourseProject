@@ -34,6 +34,7 @@
             "arrowParens": "always"
           }
         ],
+        "no-unused-vars": "error",
         "guard-for-in": "off",
         "no-param-reassign": "off",
         "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],

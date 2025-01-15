@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 
-type TimePeriod = '6mths' | '12mths' | '2y' | '3y' | '4y' | '5y';
+import { TimePeriod } from './Dashboard';
 
-export const DashboardFilters = () => {
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('6mths');
+type DashboardFiltersProps = {
+  timePeriod: TimePeriod;
+  setTimePeriod: Dispatch<SetStateAction<TimePeriod>>;
+};
 
+export const DashboardFilters = ({ timePeriod, setTimePeriod }: DashboardFiltersProps) => {
   const handleChange = (event: SelectChangeEvent) => {
     setTimePeriod(event.target.value as TimePeriod);
   };

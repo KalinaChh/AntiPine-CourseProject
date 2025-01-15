@@ -16,66 +16,86 @@ import {
   YAxis,
 } from 'recharts';
 
-import { spMock } from '../../mock/spMock';
+import { DataLog } from '../../pages/history';
+import { formatChartFooterDate } from '../../utils/helpers';
 
-const DashboardContent = () => {
-  // Sample data
-  const barData = [
-    { date: '16/08', '2022': 200, '2023': 150 },
-    { date: '17/08', '2022': 300, '2023': 280 },
-    { date: '18/08', '2022': 250, '2023': 200 },
-    { date: '19/08', '2022': 400, '2023': 380 },
-    { date: '20/08', '2022': 320, '2023': 300 },
-    { date: '21/08', '2022': 100, '2023': 90 },
-    { date: '22/08', '2022': 380, '2023': 350 },
-  ];
+type DashboardContentProps = { chartData: DataLog[]; isHistoryContent: boolean };
 
+const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps) => {
+  //TODO: Get average trend for the period in %
   const pieData = [
     { name: '2022', value: 65 },
     { name: '2023', value: 35 },
   ];
 
-  const mockBarData = spMock.map((x, index) => ({ id: index, title: 'S&P 500', ...x }));
-
   const COLORS = ['#6C63FF', '#65C9FF'];
 
+  const maxTicks = 5; // Define maximum number of ticks you want
+  const interval = Math.floor(chartData.length / maxTicks); // Calculate interval
+
   return (
-    <Box sx={{ display: 'flex', gap: 2, padding: 3 }}>
-      {/* Sales Overview */}
+    <Box sx={{ display: 'flex', gap: 2, padding: 3, width: '70vw' }}>
       <Card sx={{ flex: 3, padding: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">Sales Overview</Typography>
-          <Button variant="outlined" size="small">
-            March 2023
-          </Button>
+          <Typography variant="h6">
+            {isHistoryContent ? 'History' : 'Prediction'} Overview
+          </Typography>
+
+          <Box>
+            <Button variant="outlined" size="small">
+              {formatChartFooterDate(chartData[0].Date)}
+            </Button>
+            -
+            <Button variant="outlined" size="small">
+              {formatChartFooterDate(chartData[chartData.length - 1].Date)}
+            </Button>
+          </Box>
         </Box>
 
-        {/* Bar Chart */}
-        <Box sx={{ height: 300, marginTop: 2 }}>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={mockBarData}>
-              <CartesianGrid strokeDasharray="3 3" /> <XAxis dataKey="Date" /> <YAxis /> <Tooltip />
+        <Box sx={{ height: 500, marginTop: 2 }}>
+          <ResponsiveContainer width="100%" height={500}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <Tooltip />
+              <XAxis
+                interval={interval}
+                dataKey="Date"
+                tickFormatter={formatChartFooterDate}
+                tickSize={15}
+                tickCount={5}
+              />
+              <YAxis
+                dataKey="Forecast"
+                width={100}
+                tickFormatter={(number) => `${number.toFixed(2)}$`}
+                domain={['dataMin', 'dataMax']}
+              />
               <Legend />
-              <Line type="monotone" dataKey="Forecast" stroke="#8884d8" activeDot={{ r: 8 }} />
+              <Line
+                type="monotone"
+                dataKey="Forecast"
+                stroke={isHistoryContent ? '#65C9FF' : '#8884d8'}
+                activeDot={{ r: 8 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </Box>
       </Card>
 
-      {/* Right Side Cards */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Yearly Breakup */}
         <Card sx={{ padding: 3, textAlign: 'center' }}>
-          <Typography variant="h6">Yearly Breakup</Typography>
+          <Typography variant="h6">Trend for the period</Typography>
           <Typography variant="h4" color="primary" sx={{ my: 1 }}>
+            {/* //TODO: Current price */}
             $36,358
           </Typography>
           <Typography variant="body2" color="text.secondary">
+            {/* //TODO: Last 12 moths */}
             <span style={{ color: 'green' }}>+9% </span> last year
           </Typography>
 
-          {/* Donut Chart */}
-          <Box sx={{ height: 150, marginTop: 2 }}>
+          {/* Donut Chart ? */}
+          <Box sx={{ height: 250, marginTop: 2 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -84,11 +104,11 @@ const DashboardContent = () => {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={40}
-                  outerRadius={60}
+                  innerRadius={60}
+                  outerRadius={80}
                   fill="#8884d8"
                 >
-                  {pieData.map((entry, index) => (
+                  {pieData.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -97,8 +117,7 @@ const DashboardContent = () => {
           </Box>
         </Card>
 
-        {/* Monthly Earnings */}
-        <Card sx={{ padding: 3, textAlign: 'center', position: 'relative' }}>
+        <Card sx={{ padding: 5, textAlign: 'center', position: 'relative' }}>
           <IconButton
             sx={{
               position: 'absolute',
@@ -119,7 +138,6 @@ const DashboardContent = () => {
             <span style={{ color: 'red' }}>-9% </span> last year
           </Typography>
 
-          {/* Placeholder for Graph */}
           <Box
             component="img"
             src="https://via.placeholder.com/150x50"
