@@ -1,18 +1,36 @@
 import { Dispatch, SetStateAction } from 'react';
 
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
 
 import { TimePeriod } from './Dashboard';
 
 type DashboardFiltersProps = {
   timePeriod: TimePeriod;
   setTimePeriod: Dispatch<SetStateAction<TimePeriod>>;
+
+  scenario: number;
+  setScenario: Dispatch<SetStateAction<number>>;
 };
 
-export const DashboardFilters = ({ timePeriod, setTimePeriod }: DashboardFiltersProps) => {
+export const DashboardFilters = ({
+  timePeriod,
+  scenario,
+  setTimePeriod,
+  setScenario,
+}: DashboardFiltersProps) => {
   const handleChange = (event: SelectChangeEvent) => {
     setTimePeriod(event.target.value as TimePeriod);
   };
+
+  const scenarioButtons = [0, 1, 2, 3, 4];
 
   return (
     <FormControl fullWidth>
@@ -28,6 +46,20 @@ export const DashboardFilters = ({ timePeriod, setTimePeriod }: DashboardFilters
         <MenuItem value="2y">2 years</MenuItem> <MenuItem value="3y">3 years</MenuItem>
         <MenuItem value="4y">4 years</MenuItem> <MenuItem value="5y">5 years</MenuItem>
       </Select>
+
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 2, mt: 2 }}
+      >
+        {scenarioButtons.map((x) => (
+          <Button
+            variant={scenario === x ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => setScenario(x)}
+          >
+            Scenario {x + 1}
+          </Button>
+        ))}
+      </Box>
     </FormControl>
   );
 };

@@ -1,18 +1,22 @@
 import MainLayout from '@/components/Layout/MainLayout';
 
+import { useGetBitcoinPrediction } from '../api/bitcoinController';
+import { useGetSP500Prediction } from '../api/sAndP500Controller';
 import { Dashboard } from '../components/Dashboard/Dashboard';
-import { bitcoinPredictionMock } from '../mock/predictions/bitcoinPredictionMock';
-import { sp500PredictionMock } from '../mock/predictions/sp500PredictionMock';
 
 export default function Prediction() {
-  const sp500PredictionMockData = sp500PredictionMock.map((x, index) => ({ id: index, ...x }));
-  const bitcoinMockData = bitcoinPredictionMock.map((x, index) => ({ id: index, ...x }));
+  const { data: sp500PredictionData } = useGetSP500Prediction();
+  const { data: bitcoinPredictionData } = useGetBitcoinPrediction();
+
+  if (!sp500PredictionData || !bitcoinPredictionData) {
+    return null;
+  }
 
   return (
     <MainLayout>
       <Dashboard
-        spData={sp500PredictionMockData}
-        bitcoinData={bitcoinMockData}
+        spData={sp500PredictionData}
+        bitcoinData={bitcoinPredictionData}
         boardType={'predictions'}
       />
     </MainLayout>

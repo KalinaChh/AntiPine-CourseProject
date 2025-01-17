@@ -9,7 +9,7 @@ export default function History() {
   const { data: bitcoinData } = useGetBitcoinHistory();
 
   if (!sp500PredictionData || !bitcoinData) {
-    return;
+    return null;
   }
 
   return (
