@@ -21,9 +21,9 @@ def add_cors_headers(response):
 
 @app.route('/btc/prediction', methods=['GET'])
 def get_btc_prediction():
-    # Load historical data (adjust file path and column name as needed)
-    data = pd.read_csv('btc_data_hourly.csv')  # Replace with your CSV file
-    prices = data['Close']  # Replace 'Close' with the name of the price column
+    # Load historical data
+    data = pd.read_csv('btc_data_hourly.csv')
+    prices = data['Close']
 
     # Calculate log returns
     log_returns = np.log(prices / prices.shift(1)).dropna()
@@ -62,11 +62,20 @@ def get_btc_prediction():
 
 @app.route('/btc/history', methods=['GET'])
 def get_btc_history():
-    # Load historical data (adjust file path and column name as needed)
-    data = pd.read_csv('btc_data_hourly.csv')  # Replace with your CSV file
+     # Load the hourly BTC data
+    data = pd.read_csv('btc_data_hourly.csv')
 
+    # Ensure 'Date' is in datetime format
+    data['Date'] = pd.to_datetime(data['Date'])
 
-    result = [{"date": row['Date'], "price": row['Close']} for _, row in data.iterrows()]
+    # Extract the date
+    data['DateOnly'] = data['Date'].dt.date
+
+    # Group by the 'DateOnly' and get the last entry for each day
+    daily_data = data.groupby('DateOnly').last().reset_index()
+
+    # Format the data to return only date and price
+    result = [{"date": row['DateOnly'].strftime('%Y-%m-%d'), "price": row['Close']} for _, row in daily_data.iterrows()]
 
     return jsonify(result)
 
