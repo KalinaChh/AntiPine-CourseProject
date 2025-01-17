@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 
 import { Box } from '@mui/material';
 
-import { DataLog } from '../../pages/history';
+import { DateEntry, HistoryResponse } from '../../api/responseTypes';
 import DashboardContent from './DashboardContent';
 import { DashboardFilters } from './DashboardFilters';
 import { DashboardTabs } from './DashboardTabs';
-import { getDataForPeriod } from './helpers';
+import { chartDataReducer, getDataForPeriod } from './helpers';
 
 const SP500_TAB_INDEX = 0;
 
 type DashboardProps = {
-  spData: DataLog[];
-  bitcoinData: DataLog[];
+  spData: HistoryResponse;
+  bitcoinData: HistoryResponse;
   boardType: 'history' | 'predictions';
 };
 
@@ -22,7 +22,7 @@ export const Dashboard = ({ spData, bitcoinData, boardType }: DashboardProps) =>
   const [selectedTab, setSelectedTab] = useState(SP500_TAB_INDEX);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('6mths');
 
-  const [chartData, setChartData] = useState<DataLog[]>([]);
+  const [chartData, setChartData] = useState<DateEntry[]>([]);
 
   const isHistory = boardType === 'history';
 
@@ -30,11 +30,11 @@ export const Dashboard = ({ spData, bitcoinData, boardType }: DashboardProps) =>
     const selectedDataSource = selectedTab === SP500_TAB_INDEX ? spData : bitcoinData;
 
     if (isHistory) {
-      setChartData(selectedDataSource);
+      setChartData(chartDataReducer(selectedDataSource, 10));
       return;
     }
 
-    setChartData(getDataForPeriod(selectedDataSource, timePeriod));
+    setChartData(chartDataReducer(getDataForPeriod(selectedDataSource, timePeriod), 10));
   }, [selectedTab, timePeriod, spData, bitcoinData]);
 
   return (

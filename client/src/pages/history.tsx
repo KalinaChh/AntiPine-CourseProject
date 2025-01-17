@@ -1,26 +1,20 @@
 import MainLayout from '@/components/Layout/MainLayout';
 
+import { useGetBitcoinHistory } from '../api/bitcoinController';
+import { useGetSP500History } from '../api/sAndP500Controller';
 import { Dashboard } from '../components/Dashboard/Dashboard';
-import { bitcoinHistoryMock } from '../mock/history/bitcoinHistoryMock';
-import { sp500PHistoryMock } from '../mock/history/sp500HistoryMock';
-
-export type DataLog = {
-  Title: string;
-  Date: string;
-  Forecast: number;
-};
 
 export default function History() {
-  const sp500PredictionMockData = sp500PHistoryMock.map((x, index) => ({ id: index, ...x }));
-  const bitcoinMockData = bitcoinHistoryMock.map((x, index) => ({ id: index, ...x }));
+  const { data: sp500PredictionData } = useGetSP500History();
+  const { data: bitcoinData } = useGetBitcoinHistory();
+
+  if (!sp500PredictionData || !bitcoinData) {
+    return;
+  }
 
   return (
     <MainLayout>
-      <Dashboard
-        spData={sp500PredictionMockData}
-        bitcoinData={bitcoinMockData}
-        boardType={'history'}
-      />
+      <Dashboard spData={sp500PredictionData} bitcoinData={bitcoinData} boardType={'history'} />
     </MainLayout>
   );
 }

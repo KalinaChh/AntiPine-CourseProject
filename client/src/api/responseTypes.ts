@@ -1,4 +1,4 @@
-type DateEntry = {
+export type DateEntry = {
   date: string;
   price: number;
 };

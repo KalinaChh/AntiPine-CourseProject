@@ -16,10 +16,10 @@ import {
   YAxis,
 } from 'recharts';
 
-import { DataLog } from '../../pages/history';
+import { DateEntry } from '../../api/responseTypes';
 import { formatChartFooterDate } from '../../utils/helpers';
 
-type DashboardContentProps = { chartData: DataLog[]; isHistoryContent: boolean };
+type DashboardContentProps = { chartData: DateEntry[]; isHistoryContent: boolean };
 
 const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps) => {
   //TODO: Get average trend for the period in %
@@ -43,11 +43,11 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
 
           <Box>
             <Button variant="outlined" size="small">
-              {formatChartFooterDate(chartData?.[0]?.Date)}
+              {formatChartFooterDate(chartData?.[0]?.date)}
             </Button>
             -
             <Button variant="outlined" size="small">
-              {formatChartFooterDate(chartData?.[chartData.length - 1]?.Date)}
+              {formatChartFooterDate(chartData?.[chartData.length - 1]?.date)}
             </Button>
           </Box>
         </Box>
@@ -59,13 +59,13 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
               <Tooltip />
               <XAxis
                 interval={interval}
-                dataKey="Date"
+                dataKey="date"
                 tickFormatter={formatChartFooterDate}
                 tickSize={15}
                 tickCount={5}
               />
               <YAxis
-                dataKey="Forecast"
+                dataKey="price"
                 width={100}
                 tickFormatter={(number) => `${number.toFixed(2)}$`}
                 domain={['dataMin', 'dataMax']}
@@ -73,7 +73,7 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
               <Legend />
               <Line
                 type="monotone"
-                dataKey="Forecast"
+                dataKey="price"
                 stroke={isHistoryContent ? '#65C9FF' : '#8884d8'}
                 activeDot={{ r: 8 }}
               />
