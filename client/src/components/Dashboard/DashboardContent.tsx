@@ -123,8 +123,7 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
           </Box>
         </Card>
 
-        {/* TODO: Finish */}
-        <Card sx={{ padding: 5, textAlign: 'center', position: 'relative' }}>
+        <Card sx={{ padding: 8, textAlign: 'center', position: 'relative' }}>
           <IconButton
             sx={{
               position: 'absolute',
@@ -137,20 +136,10 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
           >
             <AttachMoneyIcon />
           </IconButton>
-          <Typography variant="h6">Monthly Earnings</Typography>
+          <Typography variant="h6">Current price</Typography>
           <Typography variant="h4" color="primary" sx={{ my: 1 }}>
-            $6,820
+            ${isHistoryContent ? chartData[chartData.length - 1]?.price : chartData[0]?.price}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <span style={{ color: 'red' }}>-9% </span> last year
-          </Typography>
-
-          <Box
-            component="img"
-            src="https://via.placeholder.com/150x50"
-            alt="Graph"
-            sx={{ width: '100%', mt: 2 }}
-          />
         </Card>
       </Box>
     </Box>
