@@ -55,6 +55,7 @@ export const Dashboard = ({ spData, bitcoinData, boardType }: DashboardProps) =>
 
         {!isHistory && (
           <DashboardFilters
+            totalScenarios={Object.keys(spData).length}
             timePeriod={timePeriod}
             scenario={scenario}
             setTimePeriod={setTimePeriod}

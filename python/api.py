@@ -19,6 +19,8 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return response
 
+num_scenarios = 5  # Number of simulations
+
 @app.route('/btc/prediction', methods=['GET'])
 def get_btc_prediction():
     # Load historical data
@@ -29,7 +31,6 @@ def get_btc_prediction():
     log_returns = np.log(prices / prices.shift(1)).dropna()
 
     # Monte Carlo simulation parameters
-    num_scenarios = 5  # Number of simulations
     days_to_forecast = 5 * 365  # Forecast duration in days (5 years)
 
     # Calculate statistical parameters of log returns
@@ -89,7 +90,6 @@ def get_sp500_prediction():
     log_returns = np.log(prices / prices.shift(1)).dropna()
 
     # Monte Carlo simulation parameters
-    num_scenarios = 5  # Number of scenarios
     days_to_forecast = 5 * 365  # Forecast duration in days (5 years)
 
     # Calculate statistical parameters of log returns

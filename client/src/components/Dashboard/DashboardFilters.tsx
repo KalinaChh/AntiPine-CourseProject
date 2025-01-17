@@ -13,6 +13,7 @@ import {
 import { TimePeriod } from './Dashboard';
 
 type DashboardFiltersProps = {
+  totalScenarios: number;
   timePeriod: TimePeriod;
   setTimePeriod: Dispatch<SetStateAction<TimePeriod>>;
 
@@ -21,6 +22,7 @@ type DashboardFiltersProps = {
 };
 
 export const DashboardFilters = ({
+  totalScenarios,
   timePeriod,
   scenario,
   setTimePeriod,
@@ -30,7 +32,7 @@ export const DashboardFilters = ({
     setTimePeriod(event.target.value as TimePeriod);
   };
 
-  const scenarioButtons = [0, 1, 2, 3, 4];
+  const scenarioButtons = Array.from({ length: totalScenarios }, (_, i) => i);
 
   return (
     <FormControl fullWidth>
