@@ -1,13 +1,23 @@
 from flask import Flask, jsonify, request
 import numpy as np
 import pandas as pd
+from datetime import datetime, timedelta
+
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 @app.route("/")
 def home():
     return "Hello, Flask!"
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
 
 @app.route('/btc/prediction', methods=['GET'])
 def get_btc_prediction():
@@ -19,31 +29,36 @@ def get_btc_prediction():
     log_returns = np.log(prices / prices.shift(1)).dropna()
 
     # Monte Carlo simulation parameters
-    num_simulations = 5  # Number of simulations
-    hours_to_forecast = 5 * 365 * 24  # Number of hours to forecast (5 years)
+    num_scenarios = 5  # Number of simulations
+    days_to_forecast = 5 * 365  # Forecast duration in days (5 years)
 
     # Calculate statistical parameters of log returns
     mean_return = log_returns.mean()
     std_deviation = log_returns.std()
 
-    # Initialize an array to store simulation results
-    simulation_results = np.zeros((hours_to_forecast, num_simulations))
+    # Initialize response
+    response = {}
 
-    # Run simulations
-    for sim in range(num_simulations):
+    # Run simulations for each scenario
+    for scenario_num in range(1, num_scenarios + 1):
+        scenario_name = f'scenario{scenario_num}'
         price_series = [prices.iloc[-1]]  # Start from the last observed price
-        for _ in range(hours_to_forecast):
+        dates = [datetime.now() + timedelta(days=i) for i in range(days_to_forecast)]
+
+        # Generate prices
+        for _ in range(days_to_forecast - 1):
             next_log_return = np.random.normal(mean_return, std_deviation)  # Generate random log return
             next_price = price_series[-1] * np.exp(next_log_return)  # Calculate next price using log returns
             price_series.append(next_price)
-        simulation_results[:, sim] = price_series[1:]  # Exclude the starting price
 
+        # Prepare scenario data
+        scenario_data = [{"date": date.strftime("%Y-%m-%d"), "price": round(price, 2)}
+                         for date, price in zip(dates, price_series)]
+        
+        # Add to response
+        response[scenario_name] = scenario_data
 
-    result = {
-        "predictions": simulation_results.tolist()
-    }
-
-    return jsonify(result)
+    return jsonify(response)
 
 @app.route('/btc/history', methods=['GET'])
 def get_btc_history():
@@ -51,9 +66,7 @@ def get_btc_history():
     data = pd.read_csv('btc_data_hourly.csv')  # Replace with your CSV file
 
 
-    result = {
-        "history": data[['Date', 'Close']].to_dict(),
-    }
+    result = [{"date": row['Date'], "price": row['Close']} for _, row in data.iterrows()]
 
     return jsonify(result)
 
@@ -67,31 +80,36 @@ def get_sp500_prediction():
     log_returns = np.log(prices / prices.shift(1)).dropna()
 
     # Monte Carlo simulation parameters
-    num_simulations = 5  # Number of simulations
-    hours_to_forecast = 5 * 365  # Number of hours to forecast (5 years)
+    num_scenarios = 5  # Number of scenarios
+    days_to_forecast = 5 * 365  # Forecast duration in days (5 years)
 
     # Calculate statistical parameters of log returns
     mean_return = log_returns.mean()
     std_deviation = log_returns.std()
 
-    # Initialize an array to store simulation results
-    simulation_results = np.zeros((hours_to_forecast, num_simulations))
+    # Initialize response dictionary
+    response = {}
 
-    # Run simulations
-    for sim in range(num_simulations):
+    # Run simulations for each scenario
+    for scenario_num in range(1, num_scenarios + 1):
+        scenario_name = f'scenario{scenario_num}'
         price_series = [prices.iloc[-1]]  # Start from the last observed price
-        for _ in range(hours_to_forecast):
+        dates = [datetime.now() + timedelta(days=i) for i in range(days_to_forecast)]
+
+        # Generate prices
+        for _ in range(days_to_forecast - 1):
             next_log_return = np.random.normal(mean_return, std_deviation)  # Generate random log return
             next_price = price_series[-1] * np.exp(next_log_return)  # Calculate next price using log returns
             price_series.append(next_price)
-        simulation_results[:, sim] = price_series[1:]  # Exclude the starting price
 
+        # Prepare scenario data
+        scenario_data = [{"date": date.strftime("%Y-%m-%d"), "price": round(price, 2)}
+                         for date, price in zip(dates, price_series)]
+        
+        # Add to response
+        response[scenario_name] = scenario_data
 
-    result = {
-        "predictions": simulation_results.tolist()
-    }
-
-    return jsonify(result)
+    return jsonify(response)
 
 @app.route('/sp500/history', methods=['GET'])
 def get_sp500_history():
@@ -99,11 +117,9 @@ def get_sp500_history():
     data = pd.read_csv('sp500_historical_data.csv')  # Replace with your CSV file
 
 
-    result = {
-        "history": data[['Date', 'Close']].to_dict(),
-    }
+    result = [{"date": row['Date'], "price": row['Close']} for _, row in data.iterrows()]
 
     return jsonify(result)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
