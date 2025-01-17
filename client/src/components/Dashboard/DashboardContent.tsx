@@ -17,7 +17,8 @@ import {
 } from 'recharts';
 
 import { DateEntry } from '../../api/responseTypes';
-import { formatChartFooterDate } from '../../utils/helpers';
+import { calculateGainsLosses, calculateTrend, formatChartFooterDate } from '../../utils/helpers';
+import { PieChartTooltip } from './Charts/PieChartTooltip';
 
 type DashboardContentProps = { chartData: DateEntry[]; isHistoryContent: boolean };
 
@@ -32,6 +33,9 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
 
   const maxTicks = 5; // Define maximum number of ticks you want
   const interval = Math.floor(chartData.length / maxTicks); // Calculate interval
+
+  const gainsLosesPie = calculateGainsLosses(chartData || []);
+  const { moneyTrend, percentageTrend } = calculateTrend(chartData || []);
 
   return (
     <Box sx={{ display: 'flex', gap: 2, padding: 3, width: '70vw' }}>
@@ -84,22 +88,24 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
 
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Card sx={{ padding: 3, textAlign: 'center' }}>
-          <Typography variant="h6">Trend for the period</Typography>
+          <Typography variant="h6">
+            Trend {isHistoryContent ? 'since beginning' : 'for the period'}
+          </Typography>
           <Typography variant="h4" color="primary" sx={{ my: 1 }}>
-            {/* //TODO: Current price */}
-            $36,358
+            ${moneyTrend}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {/* //TODO: Last 12 moths */}
-            <span style={{ color: 'green' }}>+9% </span> last year
+            <span style={{ color: 'green' }}>{percentageTrend}% </span>
+            {isHistoryContent ? 'since begging' : 'for selected period'}
           </Typography>
 
-          {/* Donut Chart ? */}
           <Box sx={{ height: 250, marginTop: 2 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
+                <Tooltip content={<PieChartTooltip />} />
+
                 <Pie
-                  data={pieData}
+                  data={gainsLosesPie}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
@@ -117,6 +123,7 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
           </Box>
         </Card>
 
+        {/* TODO: Finish */}
         <Card sx={{ padding: 5, textAlign: 'center', position: 'relative' }}>
           <IconButton
             sx={{
