@@ -18,21 +18,15 @@ import {
 
 import { DateEntry } from '../../api/responseTypes';
 import { calculateGainsLosses, calculateTrend, formatChartFooterDate } from '../../utils/helpers';
-import { PieChartTooltip } from './Charts/PieChartTooltip';
+import { LineChartTooltip, PieChartTooltip } from './Charts/PieChartTooltip';
 
 type DashboardContentProps = { chartData: DateEntry[]; isHistoryContent: boolean };
 
 const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps) => {
-  //TODO: Get average trend for the period in %
-  const pieData = [
-    { name: '2022', value: 65 },
-    { name: '2023', value: 35 },
-  ];
-
   const COLORS = ['#6C63FF', '#65C9FF'];
 
-  const maxTicks = 5; // Define maximum number of ticks you want
-  const interval = Math.floor(chartData.length / maxTicks); // Calculate interval
+  const maxTicks = 5;
+  const interval = Math.floor(chartData.length / maxTicks);
 
   const gainsLosesPie = calculateGainsLosses(chartData || []);
   const { moneyTrend, percentageTrend } = calculateTrend(chartData || []);
@@ -60,7 +54,7 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
           <ResponsiveContainer width="100%" height={500}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <Tooltip />
+              <Tooltip content={<LineChartTooltip />} />
               <XAxis
                 interval={interval}
                 dataKey="date"
@@ -114,7 +108,7 @@ const DashboardContent = ({ chartData, isHistoryContent }: DashboardContentProps
                   outerRadius={80}
                   fill="#8884d8"
                 >
-                  {pieData.map((_entry, index) => (
+                  {gainsLosesPie.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
